@@ -42,12 +42,61 @@ BasseDonnees o-- CodePersonne
 @enduml
 
 
-
 ==  = = = = = = = ==  = = = = = = = = = = = = = ==  = = = = = = = ==
-2. Proposez une premi`ere version du diagramme de s´equence pour le sc´enario nominal ”Saisie
-code utilisateur et entr´ee (les deux dans les temps)”. Compl´etez le diagramme de classes.
+2. Proposez une première version du diagramme de séquence pour le scénario nominal ”Saisie
+code utilisateur et entrée (les deux dans les temps)”. Complétez le diagramme de classes.
 
+@startuml
+autonumber
+title Scénario nominal: Saisie code utilisateur et entrée
 
+actor Utilisateur as user
+participant "Clavier" as clavier
+participant "Système" as sys
+database "Base Codes" as BD
+participant "Voyant: vert" as vert
+participant "Voyant: rouge" as rouge
+participant "Porte" as porte
+participant "Chronomètre" as crono
+participant "Archives" as arch
+
+sys -> rouge : Allumer (en attente de code)
+activate rouge
+user -> clavier : Saisir C1
+clavier -> sys : nb C1
+sys -> vert : Allumer
+activate vert
+sys -> crono : Déclencher(5 segs)
+activate crono
+user -> clavier : Saisir C2
+clavier -> sys : nb C2
+user -> clavier : Saisir C3
+clavier -> sys : nb C3
+user -> clavier : Saisir C4
+clavier -> sys : nb C4
+sys -> crono : Arreter
+crono --> sys : OK (no timeout)
+deactivate crono
+sys -> rouge : Eteindre
+deactivate rouge
+sys -> BD : Verifier code
+activate BD
+BD --> sys : OK (code match)
+deactivate BD
+sys -> crono : Déclencher(20 segs)
+activate crono
+sys -> porte : Déverouiller
+user -> porte : Ouvrir/entrer
+user -> porte : Fermer
+sys -> porte : Verouiller
+sys -> crono : Arreter
+crono --> sys : OK (no timeout)
+deactivate crono
+sys --> arch : Archiver tentative
+sys -> vert : Eteindre
+deactivate vert
+
+@enduml
 
 
 ==  = = = = = = = ==  = = = = = = = = = = = = = ==  = = = = = = = ==
